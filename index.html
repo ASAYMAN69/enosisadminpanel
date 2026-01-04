@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenEstate Pro | Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-container">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <span>GreenEstate Pro</span>
+                </div>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a class="nav-link active" onclick="showPage('dashboard')">
+                        <span class="nav-icon"><i class="fas fa-chart-line"></i></span>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="showPage('properties')">
+                        <span class="nav-icon"><i class="fas fa-building"></i></span>
+                        <span>Properties</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="showPage('settings')">
+                        <span class="nav-icon"><i class="fas fa-cog"></i></span>
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Dashboard Page -->
+            <div id="dashboard-page" class="page">
+                <div class="page-header">
+                    <h1>Dashboard Overview</h1>
+                    <div class="header-actions">
+                        <div id="current-date"></div>
+                        <div class="user-profile">
+                            <div class="user-avatar">AD</div>
+                            <div>
+                                <div style="font-weight: 600;">Admin</div>
+                                <div style="font-size: 12px; color: var(--dark-gray);">Administrator</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Total Projects</h3>
+                            <p class="stat-number" id="total-projects">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Ongoing Projects</h2>
+                        <button class="btn btn-primary btn-sm" onclick="showPropertyForm('Ongoing')">
+                            <i class="fas fa-plus"></i> Add Project
+                        </button>
+                    </div>
+                    <div id="ongoing-projects-container" class="loading-container">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">Loading ongoing projects...</div>
+                    </div>
+                    <div class="recent-items hidden" id="ongoing-projects">
+                        <!-- Projects will be loaded here -->
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Upcoming Projects</h2>
+                        <button class="btn btn-primary btn-sm" onclick="showPropertyForm('Upcoming')">
+                            <i class="fas fa-plus"></i> Add Project
+                        </button>
+                    </div>
+                    <div id="upcoming-projects-container" class="loading-container">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">Loading upcoming projects...</div>
+                    </div>
+                    <div class="recent-items hidden" id="upcoming-projects">
+                        <!-- Projects will be loaded here -->
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Finished Projects</h2>
+                        <button class="btn btn-primary btn-sm" onclick="showPropertyForm('Finished')">
+                            <i class="fas fa-plus"></i> Add Project
+                        </button>
+                    </div>
+                    <div id="finished-projects-container" class="loading-container">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">Loading finished projects...</div>
+                    </div>
+                    <div class="recent-items hidden" id="finished-projects">
+                        <!-- Projects will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Properties Page -->
+            <div id="properties-page" class="page hidden">
+                <div class="page-header">
+                    <h1>Project Management</h1>
+                    <button class="btn btn-primary" onclick="showPropertyForm()">
+                        <i class="fas fa-plus"></i> Add Project
+                    </button>
+                </div>
+
+                <div id="properties-list-container" class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Loading projects...</div>
+                </div>
+                <div class="properties-grid hidden" id="properties-list">
+                    <!-- Properties will appear here -->
+                </div>
+
+                <div id="no-properties" class="empty-state hidden">
+                    <div class="empty-icon"><i class="fas fa-home"></i></div>
+                    <h3 class="empty-title">No Projects Yet</h3>
+                    <p class="empty-text">Start building your project portfolio by adding your first project.</p>
+                    <button class="btn btn-primary" onclick="showPropertyForm()">
+                        <i class="fas fa-plus"></i> Add First Project
+                    </button>
+                </div>
+            </div>
+
+            <!-- Settings Page -->
+            <div id="settings-page" class="page hidden">
+                <div class="page-header">
+                    <h1>Settings</h1>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title" style="margin-bottom: 16px;">Website Settings</h2>
+                    <div class="form-group">
+                        <label class="form-label">Company Name</label>
+                        <input type="text" id="company-name" class="form-control" placeholder="Enter company name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contact Email</label>
+                        <input type="email" id="contact-email" class="form-control" placeholder="Enter contact email">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" id="phone-number" class="form-control" placeholder="Enter phone number">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Address</label>
+                        <input type="text" id="company-address" class="form-control" placeholder="Enter company address">
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-outline" onclick="showPage('dashboard')">Cancel</button>
+                        <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title" style="margin-bottom: 16px;">Data Management</h2>
+                    <p style="margin-bottom: 16px;">Manage your dashboard data and exports.</p>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <button class="btn btn-primary" onclick="exportData()">
+                            <i class="fas fa-download"></i> Export Data
+                        </button>
+                        <button class="btn btn-secondary" onclick="importData()">
+                            <i class="fas fa-upload"></i> Import Data
+                        </button>
+                        <button class="btn btn-danger" onclick="clearAllData()">
+                            <i class="fas fa-trash"></i> Clear All Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Property Form Modal -->
+    <div id="property-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="property-modal-title">Add New Project</h2>
+                <button class="close-btn" onclick="closeModal('property-modal')">×</button>
+            </div>
+            <form id="property-form" onsubmit="saveProperty(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Project Name *</label>
+                        <input type="text" id="property-name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Location *</label>
+                        <input type="text" id="property-location" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Status *</label>
+                        <select id="property-status" class="form-control" required>
+                            <option value="Ongoing">Ongoing</option>
+                            <option value="Upcoming">Upcoming</option>
+                            <option value="Finished">Finished</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea id="property-description" class="form-control" rows="4"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Project Image</label>
+                    <input type="file" id="property-image" class="form-control" accept="image/*" onchange="previewPropertyImage(event)">
+                    <div class="image-preview">
+                        <img id="property-image-preview" src="" style="display: none;">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('property-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="property-submit-btn">
+                        <i class="fas fa-save"></i> Add Project
+                    </button>
+                </div>
+                <input type="hidden" id="property-id">
+                <input type="hidden" id="property-db-id">
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
