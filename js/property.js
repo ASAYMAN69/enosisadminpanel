@@ -26,36 +26,24 @@ async function saveProperty(event) {
         createdAt: new Date().toISOString()
     };
 
+    let photosToSend = [];
+    const currentPreviewItems = document.querySelectorAll('.image-preview-item');
+    currentPreviewItems.forEach(item => {
+        const src = item.dataset.imageSrc;
+        if (src) {
+            photosToSend.push(src);
+        }
+    });
+
     if (dbId) {
         // Update existing property via API
-        const imageInput = document.getElementById('property-image');
-        const files = Array.from(imageInput.files);
-        let photosToSend = []; // This will hold Base64 strings or existing URLs
-
-        const existingProject = projects.find(p => p.id === dbId); // Find the current project details
-
-        if (files.length > 0) {
-            // New files selected, convert to Base64
-            try {
-                photosToSend = await Promise.all(files.map(file => fileToBase64(file)));
-            } catch (error) {
-                console.error("Error converting new files to base64 for update:", error);
-                alert("Failed to process new image files for update.");
-                return;
-            }
-        } else if (existingProject && existingProject.photo && existingProject.photo.length > 0) {
-            // No new files, but existing project has photos (URLs)
-            photosToSend = existingProject.photo;
-        }
-        
-        // Ensure id is a number for the API
         const patchPayload = {
             id: parseInt(dbId), 
             projectName: property.name,
             location: property.location,
             description: property.description,
             status: property.status,
-            photo: photosToSend
+            photo: photosToSend 
         };
 
         try {
@@ -76,7 +64,6 @@ async function saveProperty(event) {
             console.log('Project updated successfully via API:', apiResponse);
             alert('Project updated successfully!');
 
-            // Re-fetch projects to update the dashboard with the changes from the API
             fetchProjects();
             closeModal('property-modal');
 
@@ -85,31 +72,16 @@ async function saveProperty(event) {
             alert("Failed to update project: " + error.message);
         }
     } else {
-        // Add new property
-        const imageInput = document.getElementById('property-image');
-        const files = Array.from(imageInput.files);
-        let base64Photos = [];
-
-        if (files.length > 0) {
-            try {
-                // Assuming fileToBase64 is a globally available utility function
-                base64Photos = await Promise.all(files.map(file => fileToBase64(file)));
-            } catch (error) {
-                console.error("Error converting file to base64:", error);
-                alert("Failed to process image files.");
-                return; // Stop if image conversion fails
-            }
-        }
-
+        // Add new property via API
         const newId = Date.now(); // Generate a unique timestamp ID (integer for int8)
 
         const newProjectPayload = {
-            id: newId, // Add the generated ID to the payload
+            id: newId, 
             projectName: property.name,
             location: property.location,
             description: property.description,
             status: property.status,
-            photo: base64Photos // Array of Base64 strings
+            photo: photosToSend // Now collected from previews
         };
 
         try {
@@ -130,7 +102,6 @@ async function saveProperty(event) {
             console.log('Project added successfully via API:', apiResponse);
             alert('Project added successfully!');
 
-            // Re-fetch projects to update the dashboard with the new project from the API
             fetchProjects();
             closeModal('property-modal');
 
@@ -187,6 +158,15 @@ function editProperty(id) {
         document.getElementById('property-description').value = property.description;
         document.getElementById('property-submit-btn').innerHTML = '<i class="fas fa-save"></i> Update Project';
         document.getElementById('property-modal-title').textContent = 'Edit Project';
+        
+        // Display existing photos in the preview area
+        if (property.photo && property.photo.length > 0) {
+            displayImagePreviews(property.photo, true); // Pass true to clear existing previews first
+        } else {
+            // Clear any existing previews if the project has no photos
+            document.querySelector('.image-preview').innerHTML = '';
+        }
+
         showModal('property-modal');
     }
 }

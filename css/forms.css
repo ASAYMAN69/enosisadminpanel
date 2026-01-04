@@ -47,3 +47,50 @@ textarea.form-control {
     padding-top: 24px;
     border-top: 1px solid var(--medium-gray);
 }
+
+.image-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.image-preview-item {
+    position: relative;
+    border: 1px solid var(--medium-gray);
+    border-radius: var(--radius);
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-preview-item img {
+    display: block;
+}
+
+.delete-image-button {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: var(--danger);
+    color: var(--white);
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+}
+
+.delete-image-button:hover {
+    background: #cc3333;
+    transform: scale(1.1);
+}

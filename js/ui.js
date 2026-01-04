@@ -78,28 +78,54 @@ function closeModal(modalId) {
     }
 }
 
-// Image preview
-function previewPropertyImage(event) {
+// Function to render image previews with delete icons
+// This will be called by editProperty and previewPropertyImage
+function displayImagePreviews(imageSources, clearExisting = true) {
     const previewContainer = document.querySelector('.image-preview');
-    previewContainer.innerHTML = ''; // Clear existing previews
+    if (clearExisting) {
+        previewContainer.innerHTML = ''; // Clear all existing previews
+    }
 
-    const files = event.target.files;
+    imageSources.forEach(src => {
+        if (!src) return; // Skip empty sources
+
+        const previewWrapper = document.createElement('div');
+        previewWrapper.className = 'image-preview-item';
+        // Use a unique identifier for each image (e.g., hash of src or simply the src for now)
+        previewWrapper.dataset.imageSrc = src; 
+
+        const img = document.createElement('img');
+        img.src = src;
+        img.style.maxWidth = '100px';
+        img.style.maxHeight = '100px';
+        img.style.margin = '5px';
+        img.style.border = '1px solid #ddd';
+        img.style.borderRadius = '4px';
+
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'delete-image-button';
+        deleteButton.innerHTML = '&times;'; // Cross icon
+        deleteButton.onclick = (event) => removeImagePreview(event, previewWrapper);
+
+        previewWrapper.appendChild(img);
+        previewWrapper.appendChild(deleteButton);
+        previewContainer.appendChild(previewWrapper);
+    });
+}
+
+// Image preview
+async function previewPropertyImage(event) {
+    const files = Array.from(event.target.files);
+    
     if (files.length > 0) {
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const reader = new FileReader();
-
-            reader.onload = function(e) {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.style.maxWidth = '100px'; // Basic styling
-                img.style.maxHeight = '100px';
-                img.style.margin = '5px';
-                img.style.border = '1px solid #ddd';
-                img.style.borderRadius = '4px';
-                previewContainer.appendChild(img);
-            }
-            reader.readAsDataURL(file);
+        try {
+            // Convert new files to Base64
+            const base64Images = await Promise.all(files.map(file => fileToBase64(file)));
+            // Display new previews, without clearing existing ones
+            displayImagePreviews(base64Images, false); 
+        } catch (error) {
+            console.error("Error converting file to base64 for preview:", error);
+            alert("Failed to create image preview.");
         }
     }
 }
@@ -253,7 +279,16 @@ function updateDashboard() {
             propCard.className = 'property-card';
             propCard.innerHTML = `
                 <div class="property-image">
-                    <img src="${imageSrcForCard}" alt="${project.name}" onerror="this.parentElement.innerHTML=\`<div style=\"width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:white;font-size:48px;background:linear-gradient(135deg, #10b981 0%, #059669 100%);\"><i class=\"fas fa-building\"></i></div>\`">
+                    <img src="${imageSrcForCard}" alt="${project.name}" 
+                         data-project-id="${project.id}" 
+                         data-current-image-index="0"
+                         onerror="this.parentElement.innerHTML=\"<div style=\"width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:white;font-size:48px;background:linear-gradient(135deg, #10b981 0%, #059669 100%);\"><i class=\"fas fa-building\"></i></div>\">
+                    
+                    ${project.photo && project.photo.filter(Boolean).length > 1 ? `
+                    <button class="nav-button prev-button" onclick="navigateProjectImage(event, '${project.id}', -1)">&lt;</button>
+                    <button class="nav-button next-button" onclick="navigateProjectImage(event, '${project.id}', 1)">&gt;</button>
+                    ` : ''}
+
                     <span class="property-status ${statusClass}">${project.status}</span>
                 </div>
                 <div class="property-content">
@@ -278,4 +313,69 @@ function updateDashboard() {
             propertiesListEl.appendChild(propCard);
         });
     }
+}
+
+// Function to render image previews with delete icons
+// This will be called by editProperty and previewPropertyImage
+function displayImagePreviews(imageSources, clearExisting = true) {
+    const previewContainer = document.querySelector('.image-preview');
+    if (clearExisting) {
+        previewContainer.innerHTML = ''; // Clear all existing previews
+    }
+
+    imageSources.forEach(src => {
+        if (!src) return; // Skip empty sources
+
+        const previewWrapper = document.createElement('div');
+        previewWrapper.className = 'image-preview-item';
+        // Use a unique identifier for each image (e.g., hash of src or simply the src for now)
+        previewWrapper.dataset.imageSrc = src; 
+
+        const img = document.createElement('img');
+        img.src = src;
+        img.style.maxWidth = '100px';
+        img.style.maxHeight = '100px';
+        img.style.margin = '5px';
+        img.style.border = '1px solid #ddd';
+        img.style.borderRadius = '4px';
+
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'delete-image-button';
+        deleteButton.innerHTML = '&times;'; // Cross icon
+        deleteButton.onclick = (event) => removeImagePreview(event, previewWrapper);
+
+        previewWrapper.appendChild(img);
+        previewWrapper.appendChild(deleteButton);
+        previewContainer.appendChild(previewWrapper);
+    });
+}
+
+// Function to remove an image preview item
+function removeImagePreview(event, previewWrapper) {
+    event.stopPropagation(); // Stop event bubbling to parent elements
+    previewWrapper.remove(); // Remove the entire preview item
+}
+
+function navigateProjectImage(event, projectId, direction) {
+    event.stopPropagation(); // Prevent card click event from firing
+
+    const project = projects.find(p => p.id === projectId);
+    if (!project || !project.photo || project.photo.length < 2) {
+        return; // No project, no photos, or only one photo
+    }
+
+    const imgElement = document.querySelector(`.property-card img[data-project-id='${projectId}']`);
+    if (!imgElement) return;
+
+    let currentIndex = parseInt(imgElement.getAttribute('data-current-image-index') || '0');
+    let newIndex = currentIndex + direction;
+
+    if (newIndex < 0) {
+        newIndex = project.photo.length - 1; // Wrap around to the last image
+    } else if (newIndex >= project.photo.length) {
+        newIndex = 0; // Wrap around to the first image
+    }
+
+    imgElement.src = project.photo[newIndex];
+    imgElement.setAttribute('data-current-image-index', newIndex);
 }
