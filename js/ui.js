@@ -236,16 +236,24 @@ function updateDashboard() {
                                 project.status === 'Upcoming' ? 'status-upcoming' : 'status-finished';
             
             // Use the photo from API or fallback to icon - with proper error handling
-            let imageUrl = 'https://placehold.co/300x180/10b981/white?text=' + encodeURIComponent(project.name.charAt(0) || 'P');
-            if (project.photo) {
-                imageUrl = project.photo;
+            let imageSrcForCard = 'https://placehold.co/300x180/10b981/white?text=' + encodeURIComponent(project.name.charAt(0) || 'P');
+
+            if (project.photo && project.photo.length > 0) {
+                const firstPhoto = project.photo[0];
+                if (firstPhoto.startsWith('data:image')) {
+                    // It's a Base64 string
+                    imageSrcForCard = firstPhoto;
+                } else if (firstPhoto.startsWith('http')) {
+                    // It's a URL
+                    imageSrcForCard = firstPhoto;
+                }
             }
             
             const propCard = document.createElement('div');
             propCard.className = 'property-card';
             propCard.innerHTML = `
                 <div class="property-image">
-                    <img src="${imageUrl}" alt="${project.name}" onerror="this.parentElement.innerHTML=\`<div style=\"width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:white;font-size:48px;background:linear-gradient(135deg, #10b981 0%, #059669 100%);\"><i class=\"fas fa-building\"></i></div>\`">
+                    <img src="${imageSrcForCard}" alt="${project.name}" onerror="this.parentElement.innerHTML=\`<div style=\"width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:white;font-size:48px;background:linear-gradient(135deg, #10b981 0%, #059669 100%);\"><i class=\"fas fa-building\"></i></div>\`">
                     <span class="property-status ${statusClass}">${project.status}</span>
                 </div>
                 <div class="property-content">
