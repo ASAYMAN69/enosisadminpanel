@@ -1,11 +1,8 @@
 /* ===== Responsive Design ===== */
 @media (max-width: 1024px) {
-    .sidebar {
-        width: 240px;
-    }
+
     
     .main-content {
-        margin-left: 240px;
         padding: 24px;
     }
     
@@ -13,31 +10,19 @@
         font-size: 24px;
     }
     
-    .stats-grid {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    }
+
 }
 
 @media (max-width: 768px) {
-    .sidebar {
-        width: 100%;
-        height: auto;
-        position: relative;
-        margin-bottom: 0;
-    }
+
     
     .main-content {
-        margin-left: 0;
         padding: 20px;
     }
     
-    .dashboard-container {
-        flex-direction: column;
-    }
+
     
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
+
     
     .properties-grid {
         grid-template-columns: 1fr;

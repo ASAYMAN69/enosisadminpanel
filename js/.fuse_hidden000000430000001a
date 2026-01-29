@@ -108,8 +108,7 @@ async function fetchProjects(maxRetries = 5, retryDelay = 2000) {
                                     });                
                 console.log('Mapped projects:', projects);
                 
-                // Update dashboard and show content
-
+                // Update only the properties list and hide loading content
                 updatePropertiesList();
                 hideLoadingStates();
                 return;
@@ -141,6 +140,6 @@ async function fetchProjects(maxRetries = 5, retryDelay = 2000) {
     // If we reach here, all retries failed or max retries reached with empty data
     console.log('Max retries reached or all attempts failed, showing empty state');
     projects = [];
-    updateDashboard();
+    updatePropertiesList(); // Changed from updateDashboard();
     hideLoadingStates();
 }

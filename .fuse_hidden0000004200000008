@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>enosis Admin Panel | Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/cards.css">
+    <link rel="stylesheet" href="css/projects.css">
+    <link rel="stylesheet" href="css/buttons.css">
+    <link rel="stylesheet" href="css/modal.css">
+    <link rel="stylesheet" href="css/forms.css">
+    <link rel="stylesheet" href="css/utilities.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Dashboard Page -->
+            <div id="dashboard-page" class="page">
+                <div class="page-header">
+                    <h1>Dashboard of enosis Admin Panel</h1>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Total Projects</h3>
+                            <p class="stat-number" id="total-projects">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Ongoing Projects</h2>
+                        <button class="btn btn-primary btn-sm" onclick="showPropertyForm('Ongoing')">
+                            <i class="fas fa-plus"></i> Add Project
+                        </button>
+                    </div>
+                    <div id="ongoing-projects-container" class="loading-container">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">Loading ongoing projects...</div>
+                    </div>
+                    <div class="recent-items hidden" id="ongoing-projects">
+                        <!-- Projects will be loaded here -->
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Upcoming Projects</h2>
+                        <button class="btn btn-primary btn-sm" onclick="showPropertyForm('Upcoming')">
+                            <i class="fas fa-plus"></i> Add Project
+                        </button>
+                    </div>
+                    <div id="upcoming-projects-container" class="loading-container">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">Loading upcoming projects...</div>
+                    </div>
+                    <div class="recent-items hidden" id="upcoming-projects">
+                        <!-- Projects will be loaded here -->
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Finished Projects</h2>
+                        <button class="btn btn-primary btn-sm" onclick="showPropertyForm('Finished')">
+                            <i class="fas fa-plus"></i> Add Project
+                        </button>
+                    </div>
+                    <div id="finished-projects-container" class="loading-container">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">Loading finished projects...</div>
+                    </div>
+                    <div class="recent-items hidden" id="finished-projects">
+                        <!-- Projects will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

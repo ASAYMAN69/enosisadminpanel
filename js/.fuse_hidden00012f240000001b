@@ -3,12 +3,10 @@ function hideLoadingStates() {
     document.querySelectorAll('.loading-container').forEach(container => {
         container.style.display = 'none';
     });
-    document.querySelectorAll('.properties-grid').forEach(el => {
-        el.classList.remove('hidden');
-    });
+    // The previous .recent-items, .properties-grid selector needs adjustment
+    // Since we only have properties-grid now, let's keep it simple
+    document.getElementById('properties-list').classList.remove('hidden'); 
 }
-
-
 
 // Modal functions
 function showModal(modalId) {
@@ -96,41 +94,42 @@ function removeImagePreview(event, previewWrapper) {
     previewWrapper.remove(); // Remove the entire preview item
 }
 
+function navigateProjectImage(event, projectId, direction) {
+    event.stopPropagation(); // Prevent card click event from firing
 
-
-// Function to update the properties list display
-function updatePropertiesList(searchTerm = '', statusFilter = '') { // Added parameters
-    document.getElementById('properties-page').classList.remove('hidden');
-
-    const propertiesListEl = document.getElementById('properties-list');
-    const noPropertiesEl = document.getElementById('no-properties');
-    const propertiesListContainer = document.getElementById('properties-list-container'); // Get the loading container
-
-    if (propertiesListEl === null || noPropertiesEl === null || propertiesListContainer === null) {
-        return; 
+    const project = projects.find(p => p.id === projectId);
+    if (!project || !project.photo || project.photo.length < 2) {
+        return; // No project, no photos, or only one photo
     }
 
-    // Always hide the loading container when done
-    propertiesListContainer.style.display = 'none';
+    const imgElement = document.querySelector(`.property-card img[data-project-id='${projectId}']`);
+    if (!imgElement) return;
 
-    // Filter projects based on searchTerm and statusFilter
-    const filteredProjects = projects.filter(project => {
-        const matchesSearch = project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                              project.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                              project.description.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesStatus = statusFilter === '' || project.status === statusFilter;
-        return matchesSearch && matchesStatus;
-    });
+    let currentIndex = parseInt(imgElement.getAttribute('data-current-image-index') || '0');
+    let newIndex = currentIndex + direction;
 
-    if (filteredProjects.length === 0) { // Use filteredProjects here
-        propertiesListEl.classList.add('hidden'); // Ensure properties list is hidden
-        propertiesListEl.innerHTML = ''; // Clear projects list
-        noPropertiesEl.classList.remove('hidden'); // Show empty state message
-    } else {
-        propertiesListEl.classList.remove('hidden'); // Show properties list
-        noPropertiesEl.classList.add('hidden'); // Hide empty state message
+    if (newIndex < 0) {
+        newIndex = project.photo.length - 1; // Wrap around to the last image
+    } else if (newIndex >= project.photo.length) {
+        newIndex = 0; // Wrap around to the first image
+    }
+
+    imgElement.src = project.photo[newIndex];
+    imgElement.setAttribute('data-current-image-index', newIndex);
+}
+
+// Function to update only the properties list
+function updatePropertiesList() {
+    const propertiesListEl = document.getElementById('properties-list');
+    const noPropertiesEl = document.getElementById('no-properties');
+
+    if (projects.length === 0) {
         propertiesListEl.innerHTML = '';
-        filteredProjects.forEach(project => { // Iterate over filteredProjects
+        noPropertiesEl.classList.remove('hidden');
+    } else {
+        noPropertiesEl.classList.add('hidden');
+        propertiesListEl.innerHTML = '';
+        projects.forEach(project => {
             const statusClass = project.status === 'Ongoing' ? 'status-ongoing' : 
                                 project.status === 'Upcoming' ? 'status-upcoming' : 'status-finished';
             
@@ -148,11 +147,18 @@ function updatePropertiesList(searchTerm = '', statusFilter = '') { // Added par
             propCard.className = 'property-card';
             propCard.innerHTML = `
                 <div class="property-image">
-                                        <img src="${imageSrcForCard}" alt="${project.name}" 
-                                             data-project-id="${project.id}" 
-                                             data-current-image-index="0"
-                                             onerror="this.style.display='none';">
-                                    </div>
+                    <img src="${imageSrcForCard}" alt="${project.name}" 
+                         data-project-id="${project.id}" 
+                         data-current-image-index="0"
+                         onerror="this.parentElement.innerHTML=\"<div style=\"width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:white;font-size:48px;background:linear-gradient(135deg, #10b981 0%, #059669 100%);\"><i class=\"fas fa-building\"></i></div>">
+                    
+                    ${project.photo && project.photo.filter(Boolean).length > 1 ? `
+                    <button class="nav-button prev-button" onclick="navigateProjectImage(event, '${project.id}', -1)">&lt;</button>
+                    <button class="nav-button next-button" onclick="navigateProjectImage(event, '${project.id}', 1)">&gt;</button>
+                    ` : ''}
+
+                    <span class="property-status ${statusClass}">${project.status}</span>
+                </div>
                 <div class="property-content">
                     <h3 class="property-title">${project.name}</h3>
                     <div class="property-location">
@@ -175,15 +181,4 @@ function updatePropertiesList(searchTerm = '', statusFilter = '') { // Added par
             propertiesListEl.appendChild(propCard);
         });
     }
-}
-
-// Function to apply filters and update the display
-function applyFilters() {
-    const searchInput = document.getElementById('search-input');
-    const statusFilter = document.getElementById('status-filter');
-
-    const searchTerm = searchInput ? searchInput.value : '';
-    const selectedStatus = statusFilter ? statusFilter.value : '';
-
-    updatePropertiesList(searchTerm, selectedStatus);
 }

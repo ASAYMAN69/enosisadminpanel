@@ -139,8 +139,7 @@ async function deleteProperty(id) {
 
             // Re-fetch projects to update the dashboard with the changes from the API
             fetchProjects();
-            updatePropertiesList();
-
+            updateDashboard();
 
         } catch (error) {
             console.error("Error deleting project:", error);
