@@ -280,6 +280,10 @@ function updateDashboard() {
                     imageSrcForCard = firstPhoto;
                 }
             }
+
+            console.log('Project ID:', project.id);
+            console.log('imageSrcForCard:', imageSrcForCard);
+            console.log('project.photo:', project.photo);
             
             const propCard = document.createElement('div');
             propCard.className = 'property-card';

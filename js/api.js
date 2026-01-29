@@ -1,4 +1,4 @@
-const BASE_URL = "https://tahmidn8n.solven.app";
+const BASE_URL = "https://enosis.cortex-ai.dev";
 
 // Function to upload an image and return the public URL
 async function uploadImage(file) {
@@ -78,11 +78,22 @@ async function fetchProjects(maxRetries = 5, retryDelay = 2000) {
                 // Map the API response to our internal project structure - PRESERVE DATABASE ID
                                     projects = data.map(project => {
                                         let photos = [];
-                                        if (project.photo && Array.isArray(project.photo)) {
-                                            photos = project.photo.map(url => cleanImageUrl(url));
-                                        } else if (project.photo && typeof project.photo === 'string') {
+                                        // Attempt to parse project.photo if it's a string, assuming it might be a JSON array
+                                        let rawPhotos = project.photo;
+                                        if (typeof rawPhotos === 'string' && rawPhotos.startsWith('[') && rawPhotos.endsWith(']')) {
+                                            try {
+                                                rawPhotos = JSON.parse(rawPhotos);
+                                            } catch (e) {
+                                                console.error("Error parsing project.photo string:", e);
+                                                // If parsing fails, treat it as a single URL string
+                                            }
+                                        }
+
+                                        if (rawPhotos && Array.isArray(rawPhotos)) {
+                                            photos = rawPhotos.map(url => cleanImageUrl(url));
+                                        } else if (rawPhotos && typeof rawPhotos === 'string') {
                                             // If API mistakenly sends a single string, handle it
-                                            photos = [cleanImageUrl(project.photo)];
+                                            photos = [cleanImageUrl(rawPhotos)];
                                         }
                                         
                                         return {

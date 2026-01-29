@@ -8,7 +8,7 @@ let settings = {
 };
 
 // API Configuration - FIXED URL
-const API_URL = "https://tahmidn8n.solven.app/webhook/enosis-getall-projects";
+const API_URL = "https://enosis.cortex-ai.dev/webhook/enosis-getall-projects";
 let currentAbortController = null;
 
 // DOM Elements

@@ -47,7 +47,7 @@ async function saveProperty(event) {
         };
 
         try {
-            const response = await fetch("https://patch.asayman669.workers.dev/", {
+            const response = await fetch("https://enosis.cortex-ai.dev/webhook/enosis-patch-projects", {
                 method: 'POST', // As specified by user's curl
                 headers: {
                     'Content-Type': 'application/json',
@@ -85,7 +85,7 @@ async function saveProperty(event) {
         };
 
         try {
-            const response = await fetch("https://post.asayman669.workers.dev/", {
+            const response = await fetch("https://enosis.cortex-ai.dev/webhook/enosis-post-projects", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -121,7 +121,7 @@ async function deleteProperty(id) {
 
     if (confirm('Are you sure you want to delete this project?')) {
         try {
-            const deleteApiUrl = `https://delete.asayman669.workers.dev/?id=${encodeURIComponent(id)}`;
+            const deleteApiUrl = `https://enosis.cortex-ai.dev/webhook/enosis-delete-projects?id=${encodeURIComponent(id)}`;
             
             const response = await fetch(deleteApiUrl, {
                 method: 'GET' // As requested, a GET request
