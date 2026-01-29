@@ -118,14 +118,24 @@ async function previewPropertyImage(event) {
     const files = Array.from(event.target.files);
     
     if (files.length > 0) {
+        // Show a loading indicator
+        const previewContainer = document.querySelector('.image-preview');
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.className = 'loading-spinner';
+        previewContainer.appendChild(loadingIndicator);
+
         try {
-            // Convert new files to Base64
-            const base64Images = await Promise.all(files.map(file => fileToBase64(file)));
-            // Display new previews, without clearing existing ones
-            displayImagePreviews(base64Images, false); 
+            // Upload each file and get the URLs
+            const imageUrls = await Promise.all(files.map(file => uploadImage(file)));
+            // Remove loading indicator
+            previewContainer.removeChild(loadingIndicator);
+            // Display new previews
+            displayImagePreviews(imageUrls, false); 
         } catch (error) {
-            console.error("Error converting file to base64 for preview:", error);
-            alert("Failed to create image preview.");
+            console.error("Error uploading image:", error);
+            alert("Failed to upload image.");
+            // Remove loading indicator on error
+            previewContainer.removeChild(loadingIndicator);
         }
     }
 }
@@ -266,11 +276,7 @@ function updateDashboard() {
 
             if (project.photo && project.photo.length > 0) {
                 const firstPhoto = project.photo[0];
-                if (firstPhoto.startsWith('data:image')) {
-                    // It's a Base64 string
-                    imageSrcForCard = firstPhoto;
-                } else if (firstPhoto.startsWith('http')) {
-                    // It's a URL
+                 if (firstPhoto && typeof firstPhoto === 'string' && firstPhoto.startsWith('http')) {
                     imageSrcForCard = firstPhoto;
                 }
             }

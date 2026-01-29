@@ -1,10 +1,10 @@
 // Data storage (in-memory)
 let projects = [];
 let settings = {
-    companyName: "GreenEstate Pro",
-    contactEmail: "admin@greenestate.com",
-    phoneNumber: "+1 (555) 123-4567",
-    address: "123 Real Estate Ave, Suite 100, NY 10001"
+    companyName: "enosis Admin Panel",
+    contactEmail: "info@enosisltd.com",
+    phoneNumber: "+880 222 223 305",
+    address: "Novel House, Level 10, 137 Shantinagar, Dhaka 1217, Bangladesh"
 };
 
 // API Configuration - FIXED URL

@@ -1,3 +1,28 @@
+const BASE_URL = "https://tahmidn8n.solven.app";
+
+// Function to upload an image and return the public URL
+async function uploadImage(file) {
+    const timestamp = Date.now().toString();
+    const hash = await sha256(timestamp);
+    const ext = file.name.split('.').pop();
+    const fileName = `${hash}.${ext}`;
+
+    const uploadUrl = `${BASE_URL}/webhook/postimage?name=${hash}&ext=${ext}`;
+
+    const formData = new FormData();
+    formData.append('data', file);
+
+    const response = await fetch(uploadUrl, {
+        method: 'POST',
+        body: formData
+    });
+
+    if (response.ok) {
+        return `${BASE_URL}/webhook/getimage?name=${fileName}`;
+    } else {
+        throw new Error(`Image upload failed with status: ${response.status}`);
+    }
+}
 // Clean and validate URL helper function
 function cleanImageUrl(url) {
     if (!url) return '';
