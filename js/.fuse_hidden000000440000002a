@@ -1,9 +1,0 @@
-// Data storage (in-memory)
-let projects = [];
-
-// API Configuration - FIXED URL
-const API_URL = "https://enosis.cortex-ai.dev/webhook/enosis-getall-projects";
-let currentAbortController = null;
-
-// DOM Elements
-const totalProjectsEl = document.getElementById('total-projects');
